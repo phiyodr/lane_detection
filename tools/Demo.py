@@ -20,6 +20,20 @@
 # 0. Download images 
 # 1. Masking
 # 2. Camera Calibration
+# 3. Perspective transform
+
+# %%
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+# %matplotlib inline
+
+def cv2_imread(path):
+    return cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB)
+
+img = cv2_imread("../assets/test2.jpg")
+plt.imshow(img)
+_ = plt.title("Original image")
 
 # %% [markdown]
 # # 0. Download images 
@@ -27,14 +41,43 @@
 # from Udacity's repo
 
 # %%
-from downloader import *
+import downloader
 
 # %%
-download_calibration_images("camera_calibration_images")
-download_test_images("../assets")
+downloader.download_calibration_images("camera_calibration_images")
+downloader.download_test_images("../assets")
 
 # %% [markdown]
-# # 1. Masking
+# # 1. Camera Calibration
+
+# %%
+import camera_calibration
+import pickle
+
+# %%
+cc = camera_calibration.CameraCalibration("camera_calibration_images", img_format="jpg", nx=6, ny=9)
+cc.calibrate()
+cc.save("calibration.p")
+# TODO
+##del cc
+##cc = CameraCalibration()
+##cc.load("calibration.p")
+##cc.undist_img(img_or_imgpath)
+
+# %%
+# Original
+fig, axes = plt.subplots(1,2, figsize=(12, 5))
+axes[0].imshow(img)
+axes[0].set_title("Original image")
+
+# Transformed image
+img = camera_calibration.undistort_image(img, pkl_name="calibration.p")
+axes[1].imshow(img, cmap="gray")
+axes[1].set_title("Undistored image")
+fig.tight_layout()
+
+# %% [markdown]
+# # 2. Masking
 #
 # Example for each function.
 
@@ -47,14 +90,6 @@ import matplotlib.pyplot as plt
 
 # %% [markdown]
 # ### Main functions
-
-# %%
-def cv2_imread(path):
-    return cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB)
-
-img = cv2_imread("../assets/test2.jpg")
-plt.imshow(img)
-_ = plt.title("Original image")
 
 # %%
 img_luv = cv2.cvtColor(img, cv2.COLOR_RGB2LUV)
@@ -77,11 +112,11 @@ _ = plt.title("Bright mask")
 # %%
 fig, axes = plt.subplots(1,2, figsize=(12, 5))
 
-img_combined = masking.combine_masks(img_white, img_yellow, img_bright)
+img_combined_binary = masking.combine_masks(img_white, img_yellow, img_bright)
 axes[0].imshow(img_combined, cmap="gray")
 axes[0].set_title("Masks combined (binary)")
 
-img_combined = masking.combine_masks_in_color(img_white, img_yellow, img_bright)
+img_combined_color = masking.combine_masks_in_color(img_white, img_yellow, img_bright)
 axes[1].imshow(img_combined, cmap="gray")
 axes[1].set_title("Masks combined (each mask one color)")
 fig.tight_layout()
@@ -117,20 +152,26 @@ masking.plot_thresholds(img_hls, masking.mask_sobel_from_HLS,
                             min_thresholds, max_thresholds, figsize=(18,8))
 
 # %% [markdown]
-# # 2. Camera Calibration
-#
-#
-
-
+# # 3. Perspective transform
 
 # %%
-from camera_calibration import CameraCalibration
+import perspective_transform
 
 # %%
-cc = CameraCalibration("camera_calibration_images", img_format="jpg", nx=6, ny=9)
-cc.calibrate()
-cc.save("calibration.p")
+src = np.float32([(526, 496), (762, 496), (1016, 664), (288, 664)])
+dst = np.float32([(288,  464), (996,  464), (976,  664), (288,  664)])
 
 # %%
+binary_warped = perspective_transform.apply_perspective_transformation(img_combined_binary, src, dst)
+img_warped = perspective_transform.apply_perspective_transformation(img, src, dst)
 
+fig, axes = plt.subplots(1,2, figsize=(12, 5))
+axes[0].imshow(binary_warped, cmap="gray")
+axes[0].set_title("Warped binary image")
+
+axes[1].imshow(img_warped, cmap="gray")
+axes[1].set_title("Warped original image")
+fig.tight_layout()
+
+# %%
 
