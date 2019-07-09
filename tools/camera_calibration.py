@@ -110,3 +110,16 @@ class CameraCalibration():
         dist_pickle["dist"] = self.dist
         pickle.dump(dist_pickle, open(path, "wb" ))
         print("Calibration result saved in {}".format(path))
+
+# %%
+def undistort_image(img, mtx=None, dist=None, pkl_name=None):
+    """Undistort image using mtx and dist or loading saved values from pickle (pkl_name)."""
+    if pkl_name:
+        dist_pickle = pickle.load(open(pkl_name, "rb" ))
+        mtx = dist_pickle["mtx"]
+        dist = dist_pickle["dist"]
+    img_undistorted = cv2.undistort(img, mtx, dist, None, mtx)
+    return img_undistorted
+
+# %%
+
