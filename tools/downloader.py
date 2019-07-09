@@ -56,6 +56,7 @@ def download_test_images(save_folder="../assets"):
     img_urls = []
     for i in range(2):
         img_urls.append("https://github.com/udacity/CarND-Advanced-Lane-Lines/raw/master/test_images/test{}.jpg".format(i+1))
+        img_urls.append("https://github.com/udacity/CarND-Advanced-Lane-Lines/raw/master/test_images/straight_lines{}.jpg".format(i+1))
     already_exists = create_folder_if_not_existing(save_folder)  
     if already_exists:
         print("Already downloaded.")
@@ -64,4 +65,5 @@ def download_test_images(save_folder="../assets"):
     print("Done.")
 
 # %%
+
 
