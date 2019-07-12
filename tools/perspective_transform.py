@@ -30,7 +30,7 @@ def print_polyline(img, src):
     plt.imshow(img_polylines)
     
 def apply_perspective_transformation(img, src, dst):
-    """Apply perspective transformation using src and dst.""""
+    """Apply perspective transformation using src and dst."""
     M = cv2.getPerspectiveTransform(src, dst)
     img_warped = cv2.warpPerspective(img, M, img.shape[1::-1], flags=cv2.INTER_LINEAR)
     return img_warped
