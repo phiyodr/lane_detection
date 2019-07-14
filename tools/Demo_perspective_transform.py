@@ -46,7 +46,7 @@ img_hls = cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
 img_bright = masking.mask_bright_from_HLS(img_hls)
 
 img_combined_binary = masking.combine_masks(img_white, img_yellow, img_bright)
-plt.imshow(img_combined, cmap="gray")
+plt.imshow(img_combined_binary, cmap="gray")
 _ = plt.title("Masks combined (binary)")
 
 # %%
@@ -57,18 +57,27 @@ dst = np.float32([(288,  464), (996,  464), (976,  664), (288,  664)])
 perspective_transform.print_polyline(img, src)
 
 # %%
-binary_warped = perspective_transform.apply_perspective_transformation(img_combined_binary, src, dst)
-img_warped = perspective_transform.apply_perspective_transformation(img, src, dst)
+src = np.float32([(526, 496), (762, 496), (1016, 664), (288, 664)])
+dst = np.float32([(288,  464), (996,  464), (976,  664), (288,  664)])
+
+# Warped binary image
+M, Minv = perspective_transform.get_perspective_transform_matrices(img_combined_binary, src, dst)
+binary_warped = perspective_transform.warp_img(img_combined_binary, M)
 np.save('binary_warped.npy', binary_warped)
 
+# Warped original image
+img_warped = perspective_transform.warp_img(img, M)
+
+# Plot
 fig, axes = plt.subplots(1,2, figsize=(12, 5))
 axes[0].imshow(binary_warped, cmap="gray")
 axes[0].set_title("Warped binary image")
 
-# Transformed image
 axes[1].imshow(img_warped, cmap="gray")
 axes[1].set_title("Warped original image")
 fig.tight_layout()
 
 # %%
+
+
 
