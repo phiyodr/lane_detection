@@ -1,7 +1,25 @@
+# ---
+# jupyter:
+#   jupytext:
+#     text_representation:
+#       extension: .py
+#       format_name: light
+#       format_version: '1.3'
+#       jupytext_version: 0.8.6
+#   kernelspec:
+#     display_name: Python 3
+#     language: python
+#     name: python3
+# ---
+
+# # Masking
+
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
+
+# ### masks
 
 def mask_white_from_LUV(img_luv, thresholds=(225, 255)):
     """Extract the white parts of an image using L channel of an LUV image. 
@@ -46,6 +64,8 @@ def mask_sobel_from_HLS(img_hls, deriv="x", thresholds=(20, 100)):
     return sobel_binary
 
 
+# ### combine functions
+
 def combine_masks(*args): 
     """Combine several masks (2d numpy arrays) to show all active pixels."""
     combined_binary = np.zeros_like(args[0])
@@ -65,6 +85,22 @@ def combine_masks_in_color(*args):
         print("You can only pass 2 or 3 images. You passed {} images".format(len(args)))
     return img_color
 
+
+def get_yellow_white_and_bright_pixel_mask(img):
+    """Get a binary mask of pixels which might be lane pixels, 
+    i.e. yellow, white and bright pixels."""
+    # white
+    img_luv = cv2.cvtColor(img, cv2.COLOR_RGB2LUV)
+    img_white = mask_white_from_LUV(img_luv, thresholds=(225, 255))
+    # yellow
+    img_lab = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
+    img_yellow = mask_yellow_from_LAB(img_lab)
+    # bright
+    img_hls = cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
+    img_bright = mask_bright_from_HLS(img_hls)
+    # combine
+    img_combined_binary = combine_masks(img_white, img_yellow, img_bright)
+    return img_combined_binary
 
 def plot_thresholds(img, fct, min_list, max_list, figsize=(15, 50)):
     """Plot all min_list and max_list combinations applied to img using fct."""
