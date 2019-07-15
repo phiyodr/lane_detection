@@ -127,14 +127,13 @@ def detect_initial_lane_line(img_binary_warped, return_img=False):
         left_fitx = 1*ploty**2 + 1*ploty
         right_fitx = 1*ploty**2 + 1*ploty
 
-    ## Visualization ##
+    # Visualization
     if return_img:
         # Colors in the left and right lane regions
         out_img[lefty, leftx] = [255, 0, 0] #red
         out_img[righty, rightx] = [0, 0, 255]  #blue
 
     # Plots the left and right polynomials on the lane lines      
-    # add lines
     lane_thickness = 3
     left_line_window1 = np.array([np.transpose(np.vstack([left_fitx-lane_thickness, ploty]))])
     left_line_window2 = np.array([np.flipud(np.transpose(np.vstack([left_fitx+lane_thickness, 
@@ -148,7 +147,6 @@ def detect_initial_lane_line(img_binary_warped, return_img=False):
     
     # Draw the lane onto the warped blank image
     if return_img:
-        #>window_img = np.zeros_like(out_img)
         color_green = (0, 255, 0)
         cv2.fillPoly(out_img, np.int_([left_line_pts]), color_green)
         cv2.fillPoly(out_img, np.int_([right_line_pts]), color_green)
