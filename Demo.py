@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 def cv2_imread(path):
     return cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB)
 
-img = cv2_imread("../assets/test2.jpg")
+img = cv2_imread("assets/test2.jpg")
 plt.imshow(img)
 _ = plt.title("Original image")
 
@@ -41,17 +41,17 @@ _ = plt.title("Original image")
 # from Udacity's repo
 
 # %%
-import downloader
+from tools import downloader
 
 # %%
 downloader.download_calibration_images("camera_calibration_images")
-downloader.download_test_images("../assets")
+downloader.download_test_images("assets")
 
 # %% [markdown]
 # # 1. Camera Calibration
 
 # %%
-import camera_calibration
+from tools import camera_calibration
 import pickle
 
 # %%
@@ -83,7 +83,7 @@ fig.tight_layout()
 
 # %%
 import cv2
-import masking
+from tools import masking
 import numpy as np
 import matplotlib.pyplot as plt
 # %matplotlib inline
@@ -160,7 +160,7 @@ masking.plot_thresholds(img_hls, masking.mask_sobel_from_HLS,
 # # 3. Perspective transform
 
 # %%
-import perspective_transform
+from tools import perspective_transform
 
 # %%
 src = np.float32([(526, 496), (762, 496), (1016, 664), (288, 664)])
@@ -181,7 +181,38 @@ axes[1].imshow(img_warped, cmap="gray")
 axes[1].set_title("Warped original image")
 fig.tight_layout()
 
+# %% [markdown]
+#  # 
+
+
 # %%
+from LaneDetection import LaneDetection
 
+# %%
+# Read fct, calibration values and perspective transformation parameters
+def cv2_imread(path):
+    return cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB)
+calib = pickle.load(open("tools/calibration.p", "rb" ))
+src = np.float32([(526, 496), (762, 496), (1016, 664), (288, 664)])
+dst = np.float32([(288,  464), (996,  464), (976,  664), (288,  664)])
 
+# Plot original and processed image
+fig, axes = plt.subplots(1,2, figsize=(12, 5))
+img = cv2_imread("assets/test2.jpg")
+axes[0].imshow(img)
+axes[0].set_title("Original image")
 
+ld = LaneDetection(calib['mtx'], calib['dist'], src, dst)
+img_res = ld.detect(img, save_interim_img=True, debug_mode=False)
+axes[1].imshow(img_res)
+_ = axes[1].set_title("Processed image")
+
+# %%
+for name in ld.imgs:
+    shape = ld.imgs[name].shape
+    if len(shape) == 1:
+        plt.plot(ld.imgs[name])        
+    else:
+        plt.imshow(ld.imgs[name])
+    plt.title(name)
+    plt.show()
