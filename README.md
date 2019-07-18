@@ -29,7 +29,7 @@ axes[0].set_title("Original image")
 axes[1].imshow(img_res)
 axes[1].set_title("Processed image")
 plt.savefig('original_and_processed.png')
-# ```
+```
 
 ![original_and_processed.png](original_and_processed.png)
 
