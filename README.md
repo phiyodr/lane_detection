@@ -1,5 +1,9 @@
-# README
+# lane_detection
 
+Detect street lanes using computer vision.
+The code is based on [Self Driving Car Engineer Nanodegree](https://github.com/udacity/CarND-Advanced-Lane-Lines).
+
+![original_and_processed.png](original_and_processed.png)
 
 ### Demo
 
@@ -31,9 +35,5 @@ axes[1].set_title("Processed image")
 plt.savefig('original_and_processed.png')
 ```
 
-![original_and_processed.png](original_and_processed.png)
 
-
-
-Lane detection code based on [Self Driving Car Engineer Nanodegree](https://github.com/udacity/CarND-Advanced-Lane-Lines).
 
