@@ -1,7 +1,7 @@
 # lane_detection
 
 Detect street lanes using computer vision.
-The code is based on [Self Driving Car Engineer Nanodegree](https://github.com/udacity/CarND-Advanced-Lane-Lines).
+The code is based (but heavily updated) on [Self Driving Car Engineer Nanodegree](https://github.com/udacity/CarND-Advanced-Lane-Lines).
 
 ![original_and_processed.png](original_and_processed.png)
 
